@@ -29,6 +29,7 @@ Floci emulates 21+ AWS services on a single port (`4566`). All services use the 
 | [CloudWatch Logs](cloudwatch.md) | `POST /` + `X-Amz-Target: Logs.*` | JSON 1.1 | 14 |
 | [CloudWatch Metrics](cloudwatch.md#metrics) | `POST /` with `Action=` or JSON 1.1 | Query / JSON | 8 |
 | [ACM](acm.md) | `POST /` + `X-Amz-Target: CertificateManager.*` | JSON 1.1 | 12 |
+| [CloudFront](cloudfront.md) | `/2020-05-31/distribution/...` | REST XML | 11 |
 
 ## Common Setup
 

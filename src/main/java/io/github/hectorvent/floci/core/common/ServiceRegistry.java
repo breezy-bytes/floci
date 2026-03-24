@@ -47,6 +47,7 @@ public class ServiceRegistry {
             case "cloudformation" -> config.services().cloudformation().enabled();
             case "acm" -> config.services().acm().enabled();
             case "email" -> config.services().ses().enabled();
+            case "cloudfront" -> config.services().cloudfront().enabled();
             default -> true;
         };
     }
@@ -75,6 +76,7 @@ public class ServiceRegistry {
         if (config.services().cloudformation().enabled()) enabled.add("cloudformation");
         if (config.services().acm().enabled()) enabled.add("acm");
         if (config.services().ses().enabled()) enabled.add("email");
+        if (config.services().cloudfront().enabled()) enabled.add("cloudfront");
         return enabled;
     }
 

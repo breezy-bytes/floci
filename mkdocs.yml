@@ -85,4 +85,5 @@ nav:
     - RDS: services/rds.md
     - EventBridge: services/eventbridge.md
     - CloudWatch: services/cloudwatch.md
+    - CloudFront: services/cloudfront.md
   - Contributing: contributing.md
