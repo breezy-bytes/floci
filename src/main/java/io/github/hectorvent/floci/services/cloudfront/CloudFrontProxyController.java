@@ -67,7 +67,7 @@ public class CloudFrontProxyController {
     @Inject
     public CloudFrontProxyController(
             CloudFrontService cfService,
-            @ConfigProperty(name = "quarkus.http.port", defaultValue = "8080") int serverPort
+            @ConfigProperty(name = "quarkus.http.port") int serverPort
     ) {
         this.cfService = cfService;
         this.baseUrl = "http://localhost:" + serverPort;
