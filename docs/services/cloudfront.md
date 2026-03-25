@@ -36,23 +36,70 @@ floci:
 ### AWS CLI
 
 ```bash
-export AWS_ENDPOINT_URL=http://localhost:4566
+export AWS_ENDPOINT=http://localhost:4566
 export AWS_DEFAULT_REGION=us-east-1
 export AWS_ACCESS_KEY_ID=test
 export AWS_SECRET_ACCESS_KEY=test
 
-# Create a distribution
-aws cloudfront create-distribution \
-  --origin-domain-name mybucket.s3.amazonaws.com \
-  --default-root-object index.html
+# Create a bucket and upload content to serve via CloudFront
+aws s3 mb s3://my-bucket \
+  --endpoint-url $AWS_ENDPOINT 
 
-# List distributions
-aws cloudfront list-distributions
+# Create a simple index.html file
+echo "Hello from S3 via CloudFront" > index.html
 
-# Create an invalidation
-aws cloudfront create-invalidation \
-  --distribution-id <Id> \
-  --paths "/*"
+# Upload the file to S3
+aws s3 cp index.html s3://my-bucket/index.html \
+  --endpoint-url $AWS_ENDPOINT
+
+# Create a distribution config JSON
+cat > distribution-config.json << EOF
+{
+  "CallerReference": "my-distribution-001",
+  "Comment": "Simple CloudFront distribution",
+  "Enabled": true,
+  "Origins": {
+    "Quantity": 1,
+    "Items": [
+      {
+        "Id": "my-origin",
+        "DomainName": "my-bucket.s3.amazonaws.com",
+        "S3OriginConfig": {
+          "OriginAccessIdentity": ""
+        }
+      }
+    ]
+  },
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "my-origin",
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "TrustedSigners": {
+      "Enabled": false,
+      "Quantity": 0
+    },
+    "ForwardedValues": {
+      "QueryString": false,
+      "Cookies": {
+        "Forward": "none"
+      }
+    },
+    "MinTTL": 0
+  }
+}
+EOF
+
+# Create the distribution using the config
+aws cloudfront create-distribution \                          
+  --distribution-config file://distribution-config.json \
+  --endpoint-url $AWS_ENDPOINT
+
+# Get the distribution ID
+DISTRIBUTION_ID=$(aws cloudfront list-distributions \
+  --endpoint-url $AWS_ENDPOINT \
+  --query 'DistributionList.Items[0].Id' \
+  --output text)
+  
+curl $AWS_ENDPOINT/distributions/$DISTRIBUTION_ID/index.html
 ```
 
 ### AWS SDK (Java)
